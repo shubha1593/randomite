@@ -1,36 +1,52 @@
 // Randomite
 (function($) {
 	window.myapp = {};
-
 	myapp.shapeGenerator = { 
-		generateRandomShape: function() {
-			var $div = $("<div>", {class: "random-shape"});
-			var radius = Math.floor(Math.random() * 75);
-			var colors = ["#CCCCCC","#333333","#990099", "#00A5E9"];                
-  			var rand = Math.floor(Math.random()*colors.length);      
-			$div.css("border-radius", radius);
-			$div.css("background-color", colors[rand]);
-			$(".playground").append($div);
-			$div.fadeTo("slow", 0.50);
-		}
-	};
+		_data: {
+			colors: ["#CCCCCC","#333333","#990099", "#00A5E9"]
+		},
 
-	myapp.main = function() {
-		$(document).ready(function() {
+		getRandomRadius: function() {
+			return Math.floor(Math.random() * 75);  
+		},
+
+		getRandomColor: function() {
+			var index = Math.floor(Math.random()*this._data.colors.length);
+			return this._data.colors[index];
+		},
+
+		getRandomShape: function() {
+			var $div = $("<div>", {class: "random-shape"});
+			var radius = this.getRandomRadius();               
+			$div.css("border-radius", radius);
+			$div.css("background-color", this.getRandomColor());
+			return $div;
+		},
+
+		appendShapeToPlayground: function() {
+			var $randomShape = this.getRandomShape();
+			$(".playground").append($randomShape);
+			$randomShape.fadeTo("slow", 0.50);
+		},
+
+		events: function() {
+			var self = this;
 			$("#shape").click(function() {
-				myapp.shapeGenerator.generateRandomShape();
-				console.log("reached here too");
+				self.appendShapeToPlayground();
 			});
 
 			$(document).on("click", ".random-shape", function(event) {
 				$(event.currentTarget).remove();
 			});
+		}
+	};
 
-			console.log("reached here");
+	myapp.main = function() {
+		$(document).ready(function() {
+			myapp.shapeGenerator.events();		
 		});
 	};
-	console.log("yooo");
-
+	
 	myapp.main();
 
 })(jQuery);
